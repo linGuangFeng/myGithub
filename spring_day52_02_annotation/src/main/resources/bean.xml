@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+<!--
+    开启注解扫描
+      base-package="com.itheima.entity"
+      1. 扫描当前包下所有的类；
+      2. 也会扫描当前包和其所有子包下所有的类
+      3. 扫描多个包用逗号隔开
+-->
+    <context:component-scan base-package="entity"/>
+
+    <!--==========================数据注入测试===========================-->
+
+    <bean id="haveData" class="java.lang.String">
+        <constructor-arg value="找不到会报错"/>
+    </bean>
+
+    <bean id="nonData" class="java.lang.String">
+        <constructor-arg value="找不到不会报错"/>
+    </bean>
+
+    <bean id="resource" class="java.lang.String">
+        <constructor-arg value="jdk提供的resource方法,如果找不到会报错"/>
+    </bean>
+</beans>

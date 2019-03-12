@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:bean="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+
+    <!--开启注解扫描-->
+    <context:component-scan base-package="com"/>
+    <!--开启代理-->
+    <aop:aspectj-autoproxy proxy-target-class="false"/>
+
+    <!--引入外部文件-->
+    <context:property-placeholder location="jdbc.properties"/>
+
+    <!--dataSource对象创建-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${jdbc.driverClassName}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+
+    <!--jdbcTemplate模板创建，引入dataSource-->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+
+    <!--Spring声明式事务控制配置-->
+    <!--配置事务管理器（spring提供的事务切面）-->
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!--5.2 配置事务通知规则。表示拦截到方法后匹配这里的规则，指定如何应用事务。-->
+    <bean:advice  id="txAdvice" transaction-manager="txManager">
+        <!--find/select/query开头的所有方法，事务可有可无；是只读的事务-->
+        <!--* 表示其他所有方法，必须有事务环境；是读写的事务-->
+        <tx:attributes>
+            <tx:method name = "*" propagation="REQUIRED" read-only="false"/>
+        </tx:attributes>
+    </bean:advice>
+
+    <!--事务切面点-->
+   <aop:config>
+       <aop:pointcut id="txPt" expression="execution(* com.dao.*.*(..))"/>
+       <!--建立切入点表达式与通知规则的对应关系-->
+       <aop:advisor advice-ref="txAdvice" pointcut-ref="txPt"/>
+   </aop:config>
+
+
+
+</beans>

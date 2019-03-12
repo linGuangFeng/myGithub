@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+
+
+    <!--
+     1. 使用ioc容器，创建对象
+        bean标签的配置，就相当于直接new对象。
+        会把创建的对象自动加入IOC容器。
+     2. bean标签配置细节
+        bean标签 表示要创建的一个对象
+           id   对象的引用名称。 一次只能定义一个名称。(推荐)
+           name 对象的引用名称。 一个可以定义多个名称，多个名称用逗号或空格隔开。
+           class对象的全名
+           scope对象的作用范围
+              singleton 单例;默认； 表示多次从容器中获取对象，获取的是同一个对象。
+              prototype 多例；每次从容器中获取对象，获取的都是新创建的对象。
+              request   在web项目有效，表示对象的使用范围在一次请求内有效。
+              session   在web项目有效，表示对象的使用范围在会话内有效。
+              globalsession 在集群项目有效，如果不是集群项目，相当于session。
+           lazy-init 延迟初始化
+               单例的对象默认是在创建容器时候自动创建。
+               如果配置了lazy-init="true"就表示在第一次使用单例的对象时候才创建对象。
+               对多例无效。
+           init-method 指定初始化方法，在创建对象之后就执行
+           destroy-method 指定释放资源的方法，在调用容器的close()方法时候才执行。
+                          只对单例对象有效。
+           com.factory-method 调用指定的静态或实例方法,不与其他方法调用共用，只对单列有效
+                        注：都是默认在创建容器时就会调用对应的方法，然后使用getBean方法得到他的返回值
+ -->
+
+
+    <!--基础参数测试-->
+    <bean id="mysql" name="singleton" class="com.dao.impl.UserDaoImpl_mysql" scope="singleton"
+          init-method="initMethod"
+          lazy-init="true"
+          destroy-method="destroyMethod"
+    />
+    <bean id="oracle" name="prototype" class="com.dao.impl.UserDaoImpl_oracle" scope="prototype"
+          init-method="initMethod"
+          destroy-method="destroyMethod"
+    />
+
+
+    <!--调用静态方法-->
+    <bean id="mysql_static" class="com.dao.impl.UserDaoImpl_mysql" scope="prototype"
+          factory-method="staticMethod"
+    />
+    <bean id="oracle_static" class="com.dao.impl.UserDaoImpl_oracle" scope="prototype"
+          factory-method="staticMethod"
+    />
+
+    <!--调用实列方法-->
+    <bean id ="mysqlFactory" class="com.dao.impl.UserDaoImpl_mysql"/>
+    <bean id="mysql_instance" class="com.dao.impl.UserDaoImpl_mysql" scope="singleton"
+          factory-method="instanceMethod"
+    />
+    <bean id="oracle_instance" class="com.dao.impl.UserDaoImpl_oracle" scope="prototype"
+          factory-method="instanceMethod"
+    />
+
+
+
+    <!--(1)通过带参数构造函数给对象属性赋值. Person person = new Person();-->
+    <!--
+        constructor-arg 指定构造函数参数信息
+            index 表示第几个参数，从0开始
+            name 构造函数形参名称: public Person(int id) 中的id名称
+            type 参数类型
+            value 参数值
+            ref   参数值引用容器中的另外的对象
+    -->
+    <!--==================================数据封装===================================================-->
+    <!--
+    xml文件是怎么知道class文件有那些值的？
+        答：根据setXxx方法后面的Xxx名转化成小写知道的
+    -->
+    <bean id="factoryPath" class="entity.User"/>
+
+    <bean id="username" class="java.lang.String">
+        <constructor-arg value="ref封装数据结果"/>
+    </bean>
+    <bean id="password" class="java.lang.String">
+        <constructor-arg value="12345"/>
+    </bean>
+    <bean id="id" class="java.lang.Integer">
+        <constructor-arg value="1"/>
+    </bean>
+
+    <!--索引号封装数据-->
+    <bean id="index"  class="entity.User">
+        <constructor-arg index="0" value="索引号封装数据"/>
+        <constructor-arg index="1" value="123456"/>
+        <constructor-arg index="2" value="12"/>
+    </bean>
+    <!--ref封装数据,注：此方法默认优先整形，实际注意点此方法-->
+    <bean id="ref"  class="entity.User">
+        <constructor-arg ref="id"/>
+        <constructor-arg ref="username"/>
+        <constructor-arg ref="password"/>
+    </bean>
+    <!--name封装数据-->
+    <bean id="name"  class="entity.User">
+        <constructor-arg name="username" value="name封装数据"/>
+        <constructor-arg name="password" value="123456"/>
+        <constructor-arg name="id" value="12"/>
+    </bean>
+    <!--type封装数据-->
+    <bean id="type"  class="entity.User">
+        <constructor-arg type="java.lang.String" value="type封装数据"/>
+        <constructor-arg type="java.lang.String" value="123456"/>
+        <constructor-arg type="java.lang.Integer" value="12"/>
+    </bean>
+    <!--p封装数据，必须加入xmlns:p="http://www.springframework.org/schema/p"-->
+    <bean id="p"  class="entity.User" p:username="p命名空间封装" p:password-ref="password" p:id-ref="id"/>
+
+
+    <!--==================================集合数据注入===================================================-->
+    <bean id="collectionBean" class="entity.CollectionBean">
+        <property name="list">
+            <list>
+                <value>list01</value>
+                <value>list02</value>
+            </list>
+        </property>
+        <property name="set">
+            <set>
+                <value>set01</value>
+                <value>set02</value>
+            </set>
+        </property>
+        <property name="map">
+            <map>
+                <entry key="map01" value="12"/>
+                <entry key="map02" value="12"/>
+            </map>
+        </property>
+        <property name="properties">
+            <props>
+                <prop key="prop01">12</prop>
+                <prop key="prop02">12</prop>
+            </props>
+        </property>
+        <property name="array">
+            <array>
+                <value>array01</value>
+                <value>array02</value>
+            </array>
+        </property>
+    </bean>
+
+
+</beans>

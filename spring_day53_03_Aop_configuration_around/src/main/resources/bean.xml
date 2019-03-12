@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!--创建dao-->
+    <bean id="IUserDao" class="com.dao.impl.UserDaoImpl"/>
+    <bean id="UserDao" class="com.dao.UserDao"/>
+
+    <!--创建日志切面类-->
+    <bean id="userLog" class="com.log.UserLog"/>
+
+    <!--
+    Aop 配置
+    1. <aop:config>  Aop配置的开始
+    2. <aop:pointcut> 配置切入点表达式
+        会自动对符合切入点表达式的类生成代理对象。
+    3. <aop:aspect> 切面类的配置
+        ref 引用一个切面类
+    4. <aop:before> 前置通知
+        在执行切面点表达式的方法之前，先执行切面类的insertLog方法。
+
+-->
+    <aop:config>
+        <!--切入点-->
+        <!--
+       切入点表达式：
+       1. 拦截service.impl包下所有类的所有方法(最常用)
+          execution(* com.itheima.service.impl.*.*(..))
+       2. 最全的写法：拦截service的指定类的save()方法
+          execution(public void com.itheima.service.impl.UserServiceImpl.save())
+       3. 拦截com包及其所有子包下所有以ServiceImpl结尾的类的所有方法 (方法无参数才会被拦截)
+          execution(* com..*ServiceImpl.*())
+       4. 拦截所有的save开头的方法
+          execution(* save*())
+       5. 拦截所有方法，参数任意
+          execution(* *(*))  表示参数任意，但必须要有参数
+          execution(* *(..)) 表示参数任意，参数可有可无
+       6. 拦截save()方法或者update()方法
+          execution(* save(..)) || execution(* update(..))
+          execution(* save(..)) or execution(* update(..))
+          execution(* save(..)) and execution(* update(..)) 逻辑错误
+       7. 不拦截update()方法
+          !execution(* update(..))
+           not execution(* update(..)) 注意not前要有空格
+       8. 拦截容器中指定的bean，对指定的bean生成代理对象。
+           bean(userService)  只对userService生成代理对象
+           bean(*Service)     对Service结尾的类生成代理对象
+       9. 测试：
+           切入点表达式拦截接口的方法，是否可以？
+   -->
+        <aop:pointcut id="pt" expression="execution(* com..*UserDao*.*(..))"/>
+        <aop:aspect ref="userLog"><!--切面类-->
+            <!--切入的方法-->
+            <aop:around method="around" pointcut-ref="pt"/>
+        </aop:aspect>
+    </aop:config>
+</beans>

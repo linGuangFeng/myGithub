@@ -1,0 +1,26 @@
+/**
+ * @Scope
+ * 1. 指定单例或多例
+ * 2. 默认为singleton表示单例； prototype表示多例
+ *
+ * @Lazy
+ * 默认是在创建容器时候就创建单例的对象,
+ * 如果指定@Lazy注解表示在第一次使用对象时候才创建对象.
+ * 只对单例有效
+ *
+ * @PostConstruct
+ * 创建对象之后执行的初始化方法.
+ *
+ * @PreDestroy
+ * 修饰的方法会在销毁容器之前执行
+ *
+ *
+ *
+ * 注解对比配置
+ *
+ * <bean id=""  class=""
+ *         scope=""               使用@Scope注解取代
+ *       init-method=""          使用@PostConstruct注解取代
+ *       destroy-method=""       使用@PreDestroy注解取代
+ *       lazy-init=""            使用@Lazy注解取代
+ */

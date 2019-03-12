@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:bean="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+    <!--开启注解扫描-->
+    <context:component-scan base-package="com.xml"/>
+    <!--加载jdbc配置文件-->
+    <context:property-placeholder location="jdbc.properties"/>
+    <!--开启代理-->
+    <aop:aspectj-autoproxy/>
+
+    <!--================================数据库连接信息配置==========================================-->
+
+    <!--加载配置文件信息，创建DataSource对象-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${jdbc.driverClassName}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+    <!--创建JdbcTemplate，注入dataSource-->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!--================================事务配置==========================================-->
+
+    <!--配置事务管理器,给指定的数据源配置-->
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--配置事务模板-->
+    <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+        <property name="transactionManager" ref="txManager"/>
+    </bean>
+
+    <!--配置事务规则-->
+    <tx:advice id = "idAdvice" transaction-manager="txManager">
+        <tx:attributes>
+            <tx:method name="*" propagation="REQUIRED" read-only="false"/>
+        </tx:attributes>
+    </tx:advice>
+    <!--切面类配置-->
+    <bean:config>
+        <aop:pointcut id="transactionPT" expression="execution(* com.xml..*.*(..))" />
+        <aop:advisor advice-ref="idAdvice" pointcut-ref="transactionPT"/>
+    </bean:config>
+    <!--================================实现类配置==========================================-->
+
+    <!--创建IUserDao的实现类-->
+    <bean id="iUserDao" class="com.xml.dao.impl.UserDaoImpl">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+    </bean>
+    <!--创建IUserService的实现类，注入iUserDao与transactionTemplate-->
+    <bean id="iUserService" class="com.xml.service.impl.UserServiceImpl">
+        <property name="IUserDao" ref="iUserDao"/>
+        <property name="transactionTemplate" ref="transactionTemplate"/>
+    </bean>
+
+
+
+</beans>
