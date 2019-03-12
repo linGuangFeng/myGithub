@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.IUserDao">
+
+    <sql id="selectUser"> select * from user </sql>
+
+    <!--动态sql查询-->
+    <!--if标签 在配置文件中进行条件判断-->
+    <!--where标签 取代where关键字，且会自动去掉第一个条件的and-->
+    <select id="whereExe" resultType="entity.User" parameterType="entity.FindUserByCondition">
+--       读取代码片段
+      <include refid="selectUser"/>
+      <where>
+          <if test="user != null and user.username != null ">
+              and username like #{user.username}
+          </if>
+          <if test="start != null ">
+              and birthday >= #{start}
+          </if>
+          <if test="end != null ">
+              and birthday &lt;= #{end}
+          </if>
+      </where>
+    </select>
+
+    <select id="findAll" resultType="entity.User">
+        --       读取代码片段
+        <include refid="selectUser"/>
+    </select>
+
+    <!--set 标签，主要为了实现动态更新，相当于update语句中的set关键字。注意：只有最后一个更新值可以不写逗号。-->
+    <update id="setExe" parameterType="entity.User">
+        <if test="id != null">
+            update user
+            <set>
+                <if test="username !=null ">
+                    username = #{username},
+                </if>
+                <if test="birthday !=null ">
+                    birthday = #{birthday},
+                </if>
+                <if test="sex !=null ">
+                    sex = #{sex},
+                </if>
+                <if test="address !=null ">
+                    address = #{address},
+                </if>
+            </set>
+            where id = #{id}
+        </if>
+    </update>
+
+    <select id="foreachExe" resultType="entity.User">
+        --       读取代码片段
+        <include refid="selectUser"/>
+        <foreach collection="ids" item="id" open="where id in(" close=")" separator="," >
+            #{id}
+        </foreach>
+    </select>
+
+
+
+    <!--查询用户，账户，角色的代码片段-->
+
+    <!--==============================一对一封装方法1================================================-->
+
+    <resultMap id="accounts" type="entity.Account">
+        <!--1. 封装账户信息-->
+        <result property="accountId" column="accountId" />
+        <result property="money" column="MONEY" />
+        <!--2. 封装账户关联的用户信息-->
+        <!--
+        association 一对一关联查询映射
+            property 关联的对象属性
+            column   当前表的外键字段
+            javaType 关联的对象的类型
+        -->
+        <association property="user"  column="uid" javaType="entity.User">
+            <result property="id" column="id" />
+            <result property="username" column="username"/>
+            <result property="birthday" column="birthday"/>
+            <result property="sex" column="sex"/>
+            <result property="address" column="address"/>
+        </association>
+    </resultMap>
+
+    <select id="oneOne" resultMap="accounts">
+        select * from user u, account a where a.uid = u.id
+    </select>
+
+    <!--==============================一对一封装方法2================================================-->
+
+    <resultMap id="accounts02" type="entity.Account">
+        <!--1. 封装账户信息-->
+        <result property="accountId" column="accountId" />
+        <result property="money" column="MONEY" />
+        <result property="user.id" column="id"/>
+        <result property="user.username" column="username"/>
+        <result property="user.birthday" column="birthday"/>
+        <result property="user.sex" column="sex"/>
+        <result property="user.address" column="address"/>
+    </resultMap>
+
+    <select id="oneOne02" resultMap="accounts02">
+        select * from user u, account a where a.uid = u.id
+    </select>
+
+    <!--==============================一对多封装方法================================================-->
+    <resultMap id="user" type="entity.User">
+        <result property="id" column="id" />
+        <result property="username" column="username"/>
+        <result property="birthday" column="birthday"/>
+        <result property="sex" column="sex"/>
+        <result property="address" column="address"/>
+
+        <!--2. 封装账户-->
+        <!--
+        collection 一对多
+            property 对应集合属性
+            column   当前User表的主键
+            ofType   集合元素的类型:entity.Account
+            javaType 集合的类型：java.util.List
+        -->
+        <collection property="accounts" column="id" ofType="entity.Account" javaType="java.util.List">
+            <result property="accountId" column="accountId"/>
+            <result property="money" column="money"/>
+        </collection>
+    </resultMap>
+
+    <select id="oneMore"  resultMap="user" >
+        select * from user u, account a where a.uid = u.id
+    </select>
+
+
+    <!--==============================多对多封装方法==也就是两个1对多==============================================-->
+    <!--==============================1对多==============================================-->
+    <resultMap id="moreMore"  type="entity.User">
+        <result property="id" column="id" />
+        <result property="username" column="username"/>
+        <result property="birthday" column="birthday"/>
+        <result property="sex" column="sex"/>
+        <result property="address" column="address"/>
+
+        <!--2. 封装角色-->
+        <!--
+        collection 一对多
+            property 对应集合属性
+            column   当前User表的主键
+            ofType   集合元素的类型:entity.Account
+            javaType 集合的类型：java.util.List
+        -->
+        <collection property="roles" column="id" ofType="entity.Role">
+            <result property="id" column="uid"/>
+            <result property="roleName" column="role_Name"/>
+            <result property="roleDesc" column="role_Desc"/>
+        </collection>
+    </resultMap>
+
+    <select id="moreMore" resultMap="moreMore">
+        select u.* ,r.`ROLE_DESC`,r.`ROLE_NAME` ,ur.* from user u ,role r , user_role ur
+        where ur.`UID` = u.id and ur.`RID`=r.`ID`
+    </select>
+
+    <!--==============================多对1==============================================-->
+    <resultMap id="moreMore_"  type="entity.Role">
+        <result property="id" column="rid"/>
+        <result property="roleName" column="role_Name"/>
+        <result property="roleDesc" column="role_Desc"/>
+        <!--2. 封装用户-->
+        <!--
+        collection 一对多
+            property 对应集合属性
+            column   当前User表的主键
+            ofType   集合元素的类型:entity.Account
+            javaType 集合的类型：java.util.List
+        -->
+        <collection property="user"  column="id" ofType="User">
+            <result property="id" column="id" />
+            <result property="username" column="username"/>
+            <result property="birthday" column="birthday"/>
+            <result property="sex" column="sex"/>
+            <result property="address" column="address"/>
+        </collection>
+    </resultMap>
+
+    <select id="moreMore_" resultMap="moreMore_">
+        select u.* ,r.`ROLE_DESC`,r.`ROLE_NAME` ,ur.* from user u ,role r , user_role ur
+        where ur.`UID` = u.id and ur.`RID`=r.`ID`
+    </select>
+
+
+
+
+
+</mapper>

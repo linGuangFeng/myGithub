@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace 指定接口的类全名-->
+<mapper namespace = "dao.IUserDao">
+    <!--查询全部，使用resultMap封装查询结果-->
+    <!--需求：当查询的列与对象属性不一致时候，就不能使用resultType，否则不能正确封装数据。-->
+    <!--解决： resultMap解决， 可以通过resultMap 建立查询列与对象属性的对应关系。-->
+    <resultMap id="userResultMap" type="model.User">
+        <id property="id" column="id_"/>
+        <result property="userName" column="userName_"/>
+        <result property="password" column="password_"/>
+    </resultMap>
+    <!--
+        select 表示查询操作
+            id 对应接口的方法名称，
+            resultType 指定方法返回的元素的类型
+                        注意：如果方法发挥list集合，这里只要指定集合中元素的类型
+        -->
+    <select id="findAll" resultMap="userResultMap">
+        select id id_, userName userName_, password password_ from user;
+    </select>
+
+    <!--==================================================================-->
+
+
+    <!--添加-->
+    <!--#{username} 表示获取User对象的username属性值。所以#{username}中的username不可以随意定义。-->
+    <!--注意： 如果方法参数是pojo对象类型，占位符参数值不可以随意定义-->
+    <!--注意： parameterType可省略-->
+    <!--pojo, Plain Ordinary Java Object 简单的Java对象-->
+    <insert id="insert" parameterType="model.User">
+        insert into user values(null,#{userName},#{password});
+    </insert>
+
+    <!--==================================================================-->
+
+    <!--保存后获取主键值-->
+    <!--
+        selectKey  查询主键值
+            resultType="int" 查询返回的主键的类型
+            keyColumn="id"   主键列名称
+            keyProperty="id" 主键列对应的对象的属性
+            order            获取主键的时间
+                AFTER        表示在执行插入之后获取主键值。适应于：支持主键自增长的数据库。
+                BEFORE       表示在执行插入之前获取主键值。
+                             应用： oracle数据库， select seq_user.nextval from dual;
+
+          resultType：虽然方法没有返回值，是框架内部处理，必须要有这个参数
+    -->
+    <insert id="insertGetPrimaryKey" parameterType="model.User">
+        <selectKey resultType="int" keyColumn="id" keyProperty="id" order="AFTER">
+            select LAST_INSERT_ID();
+        </selectKey>
+        insert into user values(null,#{userName},#{password});
+    </insert>
+
+    <!--保存后获取主键值(只适合支持主键自增长的数据库。)-->
+    <!--useGeneratedKeys 表示插入后获取主键值-->
+    <insert id="insertGetPrimaryKey02" parameterType="model.User" useGeneratedKeys="true" keyColumn="id" keyProperty="id" >
+        insert into user values(null,#{userName},#{password});
+    </insert>
+
+    <!--==================================================================-->
+
+    <update id="update" parameterType="model.User">
+        update user set userName=#{userName},password=#{password} where id=#{id};
+    </update>
+
+    <!--==================================================================-->
+
+    <!--注意：delete * from user where id=#{id}; 这个语法在mybatis框架是错的，必须把*去掉-->
+    <delete id="delete" parameterType="int">
+        delete from user where id=#{value};
+    </delete>
+
+    <!--==================================================================-->
+
+    <!--模糊查询,另外的实现-->
+    <!--${value} 如果方法参数是简单类型，这里必须用value；如果是对象类型，${对象属性}-->
+    <!--${value} 这种方式是直接拼接sql字符串，所以不可以防止sql注入。-->
+    <select id="findByCondition02" parameterType="string" resultType="model.User">
+        select * from user where userName like '%${value}%';
+    </select>
+
+
+</mapper>

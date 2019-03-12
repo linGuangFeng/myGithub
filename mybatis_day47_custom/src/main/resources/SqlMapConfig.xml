@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration  
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--environments 数据库环境配置-->
+    <!--加载外置配置文件-->
+    <!--<properties resource="jdbc.properties"/>-->
+    <!--default 表示默认使用哪个数据库环境-->
+    <environments default="mysql">
+        <!--配置mysql的数据库环境-->
+        <environment id="mysql">
+            <!--配置事务管理器：基于jdbc的事务控制-->
+            <transactionManager type="jdbc"></transactionManager>
+            <!--连接池配置-->
+            <dataSource type="pooled">
+                <property name="driver" value="com.mysql.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://localhost:3306/homeWork?characterEncoding=utf8"/>
+                <property name="username" value="homeWork"/>
+                <property name="password" value="homeWork"/>
+            </dataSource>
+        </environment>
+        <!--使用外置为文件加载-->
+        <!--<environment id="mysql1">-->
+            <!--<transactionManager type="jdbc"></transactionManager>-->
+            <!--<dataSource type="pooled">-->
+                <!--<property name="driver" value="${jdbc.driver}"/>-->
+                <!--<property name="url" value="${jdbc.url}"/>-->
+                <!--<property name="username" value="${jdbc.username}"/>-->
+                <!--<property name="password" value="${jdbc.password}"/>-->
+            <!--</dataSource>-->
+        <!--</environment>-->
+
+    </environments>
+
+    <!--加载接口的映射文件-->
+    <mappers>
+        <!--加载指定文件-->
+        <!--<mapper resource="dao/IUserDao.xml"/>-->
+        <!--加载dao包下所有文件，包括子文件-->
+        <package name="dao"/>
+    </mappers>
+
+</configuration>

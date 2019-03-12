@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.IAccountDao">
+
+    <!--================sql语句片段==========================-->
+
+    <sql id="account"> select * from account where uid = #{value} </sql>
+    <sql id="accounts">select * from account</sql>
+
+
+
+
+    <!--================resultMap==========================-->
+
+    <!--封装账户，延时查找用户-->
+    <resultMap id="accountResultMap" type="Account" >
+        <!--封装账户对象-->
+        <id property="accountId" column="accountId"/>
+        <result property="money" column="money"/>
+
+        <!--
+      延迟加载配置属性：
+          select 根据用户的id查询用户对象，对应一个查询sql。
+          fetchType 延迟加载策略开关
+              lazy  开启延迟加载
+              eager 及时加载（同时查询出所有数据）
+      -->
+        <!--封装用户对象-->
+        <association property="user" column="uid" javaType="User"
+                     select="dao.IUserDao.findById">
+            <id property="id" column="id"/>
+            <result property="username" column="username"/>
+            <result property="birthday" column="birthday"/>
+            <result property="sex" column="sex"/>
+            <result property="address" column="address"/>
+        </association>
+    </resultMap>
+
+
+
+
+    <!--=====================语句执行处====================================-->
+
+    <!--查找所有账户-->
+    <select id="findAll" resultMap="accountResultMap">
+        <include refid="accounts"/>
+    </select>
+
+    <!--根据id查找账户  ==  resultType="user" ==-->
+    <select id="findById" resultType="account" parameterType="int">
+        <include refid="account"/>
+    </select>
+
+
+
+
+
+
+</mapper>

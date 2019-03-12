@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.IUserDao">
+
+    <!--================sql语句片段==========================-->
+
+    <sql id="users"> select * from user </sql>
+    <sql id="user">select * from user where id = #{value}</sql>
+
+
+
+    <!--================resultMap==========================-->
+
+    <!--封装用户-->
+    <resultMap id="userResultMap" type="user" >
+        <!--封装用户对象-->
+        <result property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="birthday" column="birthday"/>
+        <result property="sex" column="sex"/>
+        <result property="address" column="address"/>
+
+        <!--封装账户对象-->
+        <collection property="accounts" column="id" ofType="account"
+                    select= "dao.IAccountDao.findById"  fetchType="lazy" >
+            <id property="accountId" column="accountId"/>
+            <result property="money" column="money"/>
+        </collection>
+
+
+    </resultMap>
+
+
+
+    <!--=====================语句执行处====================================-->
+
+    <!--查找所有用户-->
+    <select id="findAll" resultMap="userResultMap">
+        <include refid="users"/>
+    </select>
+
+    <!--根据id搜索用户 ==  resultType="user" == -->
+    <select id="findById" resultType="user" parameterType="int">
+        <include refid="user"/>
+    </select>
+
+
+
+
+
+</mapper>

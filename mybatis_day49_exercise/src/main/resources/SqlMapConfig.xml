@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration  
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--
+ properties 加载外部的配置文件
+     resource
+         1. 加载类路径下的配置文件。target/classess 此目录就是类加载器加载的目录就叫做类路径。
+         2. 如：<properties resource="jdbc.properties"/>
+     url
+         1. 加载项目外部的资源文件
+         2. 如：<properties url="file:///E:/jdbc.properties"/>
+ -->
+    <!--<properties resource="配置文件路径" />-->
+
+    <!--environments 数据库环境配置-->
+    <!--default 表示默认使用哪个数据库环境-->
+
+
+    <properties resource="jdbc.properties" />
+    <!--包扫描-->
+    <typeAliases><package name="entity"/></typeAliases>
+
+    <environments default="mysql">
+        <!--配置mysql的数据库环境-->
+        <environment id="mysql">
+            <!--配置事务管理器：基于jdbc的事务控制-->
+            <transactionManager type="jdbc"></transactionManager>
+            <!--连接池配置-->
+            <dataSource type="pooled">
+                <!--<property name="driver" value="com.mysql.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://localhost:3306/mybatis?characterEncoding=utf8"/>
+                <property name="username" value="mybatis"/>
+                <property name="password" value="mybatis"/>-->
+                <property name="driver" value="${jdbc.driver}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+
+
+    <mappers>
+        <package name="dao"/>
+    </mappers>
+
+
+</configuration>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration  
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--
+ properties 加载外部的配置文件
+     resource
+         1. 加载类路径下的配置文件。target/classess 此目录就是类加载器加载的目录就叫做类路径。
+         2. 如：<properties resource="jdbc.properties"/>
+     url
+         1. 加载项目外部的资源文件
+         2. 如：<properties url="file:///E:/jdbc.properties"/>
+ -->
+    <!--<properties resource="配置文件路径" />-->
+
+    <!--environments 数据库环境配置-->
+    <!--default 表示默认使用哪个数据库环境-->
+    <properties resource="jdbc.properties"/>
+    <environments default="mysql">
+        <!--配置mysql的数据库环境-->
+        <environment id="mysql">
+            <!--配置事务管理器：基于jdbc的事务控制-->
+            <transactionManager type="jdbc"></transactionManager>
+            <!--连接池配置-->
+            <dataSource type="pooled">
+            </dataSource>
+        </environment>
+    </environments>
+
+    <!--
+      mappers加载接口的映射文件或者接口文件
+          mapper
+              1. 加载接口的映射文件或者接口文件
+              2. 属性
+                  resource
+                      2.1 加载类路径下的单个映射文件
+                      2.2 举例：
+                  url 加载项目外部的配置文件
+                  class
+                      2.1 在注解开发时候，加载接口文件
+                      2.2 举例:<mapper class="com.itheima.dao.IUserDao"/>
+              3. 缺点：
+                 只能加载单个配置文件，如果配置文件过多，编写麻烦
+           package
+              1. 自动扫描指定包下接口对应的映射文件。
+              2. 要求：
+                  A. 接口文件要与映射文件在同一个目录。
+                  B.接口名称要与映射文件名称一致。（IUserDao.java与IUserDao.xml）
+              3. 适合mybatis注解开发与映射配置开发
+      -->
+    <!--加载接口的映射文件-->
+    <mappers>
+        <package name = "dao"/>
+    </mappers>
+
+
+</configuration>

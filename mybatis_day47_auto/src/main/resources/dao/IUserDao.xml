@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace 指定接口的类全名-->
+<mapper namespace = "dao.IUserDao">
+<!--
+    select 表示查询操作
+        id 对应接口的方法名称，
+        resultType 指定方法返回的元素的类型
+                    注意：如果方法发挥list集合，这里只要指定集合中元素的类型
+    -->
+    <select id="findAll" resultType="model.User">
+        select * from user;
+    </select>
+</mapper>

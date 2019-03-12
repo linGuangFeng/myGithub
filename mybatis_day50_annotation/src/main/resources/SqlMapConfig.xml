@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration  
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+
+<!--
+    1. 一级缓存只作用于SqlSession范围，当关闭SqlSession，缓存就失效。
+    2. 二级缓存的内容可以跨多个SqlSession，是基于映射文件的缓存。
+    3. 二级缓存缓存范围更大。
+    二级缓存数据存储到内存中，所以不是所有的对象都需要放入二级缓存。
+    哪些对象需要放入二级缓存需要自己手动指定。常用，不经常改。
+-->
+
+    <properties resource="jdbc.properties"/>
+    <!--设置全局默认延时-->
+    <settings>
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <!--二级缓存开关，默认是开启（可选）-->
+        <setting name="cacheEnable" value="true"/>
+    </settings>
+
+    <!--用于配置sql配置文件中包下的别名，主要用于指定返回类型的别名-->
+    <typeAliases>
+        <package name="entity"/>
+    </typeAliases>
+    <environments default="mysql">
+        <environment id="mysql">
+            <transactionManager type="jdbc"></transactionManager>
+            <dataSource type="pooled">
+                <property name="driver" value="${jdbc.driver}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <!--用于配置读取sql语句的配置文件-->
+    <mappers><package name="dao"/></mappers>
+</configuration>
