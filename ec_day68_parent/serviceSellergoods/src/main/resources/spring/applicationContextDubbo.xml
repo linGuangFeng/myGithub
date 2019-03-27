@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://code.alibabatech.com/schema/dubbo
+       http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!--=======================服务器设置==start=============================-->
+    <!--配置应用名称-->
+    <dubbo:application name="serviceSellergoods"/>
+    <!--配置注册地址-->
+    <!--<dubbo:registry address="zookeeper://192.168.200.12:2181"/>-->
+    <dubbo:registry address="zookeeper://192.168.200.128:2181"/>
+    <!--配置dubbo协议-->
+    <!--默认走的就是dubbo协议-->
+    <dubbo:protocol name="dubbo" port="7001"/>
+    <!--暴露接口位置-->
+    <dubbo:consumer timeout="600000"/>
+    <dubbo:annotation package="com.ec.service"/>
+    <!--=======================服务器设置==end===============================-->
+
+
+
+
+</beans>
