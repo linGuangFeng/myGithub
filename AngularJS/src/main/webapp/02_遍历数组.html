@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>遍历数组</title>
+    <script src="angular.min.js"></script>
+    <script>
+        // 创建模块
+        var app = angular.module("app",[]);
+        // 创建控制器
+        app.controller("appController",function ($scope) {
+            // 创建数组
+            $scope.users=["张三","李四","王五"];
+        })
+
+
+
+
+    </script>
+
+
+
+</head>
+<body>
+
+    <!--指定模块与控制器-->
+    <table ng-app="app" ng-controller="appController">
+        <!--遍历结果-->
+        <tr ng-repeat="user in users">
+            <td>{{user}}</td>
+        </tr>
+    </table>
+
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>遍历数组</title>
+    <script src="angular.min.js"></script>
+    <script>
+        // 创建模块
+        var app = angular.module("app",[]);
+        // 创建控制器
+        app.controller("appController",function ($scope) {
+            // 创建result方法
+            $scope.result= function () {
+                $scope.z = parseInt($scope.x) + parseInt($scope.y);
+            }
+        })
+
+
+
+
+    </script>
+
+
+
+</head>
+<body ng-app="app" ng-controller="appController">
+    <!--输入两个值求和-->
+<input ng-model="x"/> + <input ng-model="y"/> = {{z}}
+    <input type="button" value="运算" ng-click = "result()"/>
+
+
+</body>
+</html>

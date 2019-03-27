@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>遍历数组</title>
+    <script src="angular.min.js"></script>
+    <script>
+        // 创建模块
+        var app = angular.module("app",[]);
+        // 创建控制器
+        app.controller("appController",function ($scope) {
+            // 创建users对象
+            $scope.users=[
+                {"name":"张三","age":"23"},
+                {"name":"李四","age":"24"},
+                {"name":"王五","age":"25"}
+            ];
+        })
+
+
+
+
+    </script>
+
+
+
+</head>
+<body>
+
+    <!--指定模块与控制器-->
+    <table ng-app="app" ng-controller="appController">
+        <!--只循环带有"{{}}"符号的标签-->
+        <tr ng-repeat="user in users">
+            <span>普通标签文字</span>
+            <td> 姓名：{{user.name}}&nbsp&nbsp&nbsp&nbsp</td>
+            <td>年龄：{{user.age}}</td>
+            无标签文字
+        </tr>
+    </table>
+
+</body>
+</html>

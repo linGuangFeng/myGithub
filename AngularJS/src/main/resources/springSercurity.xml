@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+
+
+
+    <!--
+    步骤（无顺序）：
+        1、配置放行的资源
+        2、配置拦截表达式
+            2.1、拦截路径及配置角色
+            2.2、配置登录页面
+            2.3、退出登录配置
+            2.4、跨区域请求校验是否开启
+        3、配置登录认证的账户密码
+    -->
+
+
+    <security:http auto-config="true" use-expressions="true">
+        <security:intercept-url pattern="/**" access="ROLE_ADMIN"/>
+        <security:form-login
+                password-parameter="password"
+                username-parameter="username"
+                />
+
+        <security:csrf disabled="true"/>
+    </security:http>
+
+
+
+
+
+</beans>
